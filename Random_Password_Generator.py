@@ -1,11 +1,14 @@
 import secrets
+from collections import deque
 
-# Creates three lists for special characters, number characters, and lower case letters.
+# Creates four lists for special characters, number characters, upper case letter, and lower case letters. No backslash or space
 specialCharacters = ["!", "\"", "#", "$", "%", "&", "\'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", 
-                     "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"]
-numberCharactera = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-letterCharacters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", 
-                    "x", "y", "z"]
+                     "@", "[", "]", "^", "_", "`", "{", "|", "}", "~"]
+numberCharacters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+lowercaseLetterCharacters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", 
+                             "v", "w", "x", "y", "z"]
+uppercaseLetterCharacters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", 
+                             "V", "W", "X", "Y", "Z"]
 
 # Prompts user for the length of their desired password as well as the number of special characacters, number characters, and uppercase 
 # letter characters that the user requires.
@@ -16,29 +19,37 @@ numOfUppercaseLetterCharactersStr = input("# Of Uppercase Letter Characters Requ
 
 # Converts the required lengths into integer values.
 passwordLength = int(passwordLengthStr)
-numOfSpecialCharacters = int(passwordLengthStr)
+numOfSpecialCharacters = int(numOfSpecialCharactersStr)
 numOfNumberCharacters = int(numOfNumberCharactersStr)
 numOfUppercaseLetterCharacters = int(numOfUppercaseLetterCharactersStr)
+numOfLowercaseLetterCharacters = passwordLength - numOfSpecialCharacters - numOfNumberCharacters - numOfUppercaseLetterCharacters
 
-# Creates two empty lists to represent the password and each type of the digits.
-password = []
-indexOfType = []
+# Creates an empty deque to represent the unsorted password.
+unsortedValuesForPassword = deque()
 
-# Creates a for loop to insert placeholder values in indexOfType before modifiyng them to the type of requirement
+# Adds values based on the requirements to the password list.
+def addToList(count, list, charactersList):
+    for i in range(count):
+        randomNum = secrets.randbelow(len(charactersList))
+        list.append(charactersList[randomNum])
+    return list
+
+# Adds all the characters to the deque, unsorted.
+unsortedValuesForPassword = addToList(numOfSpecialCharacters, unsortedValuesForPassword, specialCharacters)
+unsortedValuesForPassword = addToList(numOfNumberCharacters, unsortedValuesForPassword, numberCharacters)
+unsortedValuesForPassword = addToList(numOfUppercaseLetterCharacters, unsortedValuesForPassword, uppercaseLetterCharacters)
+unsortedValuesForPassword = addToList(numOfLowercaseLetterCharacters, unsortedValuesForPassword, lowercaseLetterCharacters)
+print(unsortedValuesForPassword)
+
+# Mixes the values up and concatenates each character to the password String.
+password = ""
 for i in range(passwordLength):
-    indexOfType.append("X")
-    
-# Assigns each "X" in indexOfType with a type of character.
-while i < passwordLength:
-    randomNum1 = secrets.randbelow(passwordLength)
-    randomNum2 = secrets.randbelow(3)
-    
-    if randomNum2 == 0:
-        randomNum3 = secrets.randbelow(len(specialCharacters))
-        indexOfType.remove()
+    randomNum = secrets.randbelow(len(unsortedValuesForPassword))
+    for j in range(randomNum):
+        temp = unsortedValuesForPassword.popleft()
+        unsortedValuesForPassword.append(temp)
+    value = unsortedValuesForPassword.popleft()
+    password += value
 
-
-# Creates a while loop that iterates as long as the length of the length of the desired password from the user.
-j = 0
-while j < passwordLength:
-    j = j + 1
+# Prints out mixed up password.
+print(password)
